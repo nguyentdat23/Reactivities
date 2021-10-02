@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from "react";
-
 import {
   Button,
   Form,
@@ -13,13 +12,15 @@ interface Props {
   selectedActivity: Activity | undefined;
   closeForm: () => void;
   createOrEdit: (activity: Activity) => void;
+  submitting: boolean;
 }
 export default function ActivityForm({
   selectedActivity,
   closeForm,
   createOrEdit,
+  submitting,
 }: Props) {
-  const initialState = selectedActivity ?? {
+  let initialState = selectedActivity ?? {
     id: "",
     title: "",
     category: "",
@@ -30,11 +31,12 @@ export default function ActivityForm({
   };
   const [activity, setActivity] = useState(initialState);
 
+  console.log("form rendered");
+
   function handleInputChange(
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
     const { name, value } = event.target;
-    console.log(event.target);
     setActivity({ ...activity, [name]: value });
   }
   function handleSubmit() {
@@ -64,6 +66,7 @@ export default function ActivityForm({
         <FormInput
           placeholder="Date"
           name="date"
+          type="date"
           value={activity.date}
           onChange={handleInputChange}
         ></FormInput>
@@ -79,7 +82,13 @@ export default function ActivityForm({
           value={activity.venue}
           onChange={handleInputChange}
         ></FormInput>
-        <Button floated="right" positive type="submit" content="Confirm" />
+        <Button
+          floated="right"
+          positive
+          type="submit"
+          content="Confirm"
+          loading={submitting}
+        />
         <Button
           onClick={closeForm}
           floated="right"
