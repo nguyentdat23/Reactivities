@@ -1,51 +1,41 @@
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardMeta,
-  Image,
-} from "semantic-ui-react";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Grid } from "semantic-ui-react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useStore } from "../../../app/stores/store";
+import ActivityDetailedHeader from "./ActivitiyDetailedHeader";
+import ActivityDetailedChat from "./ActivityDetailedChat";
+import ActivityDetailededInfo from "./ActivityDetailedInfo";
+import ActivityDetailedSideBar from "./ActivityDetailedSidebar";
 
-export default function ActivityDefault() {
+export default observer(function ActivityDetaileds() {
   const { activityStore } = useStore();
+
   const {
     selectedActivity: activity,
-    openForm,
-    cancelSelectedActivity,
+    loadActivity,
+    loadingInitial,
   } = activityStore;
-  if (!activity) return <LoadingComponent />;
-  return (
-    <Card fluid>
-      <Image src={`/assets/categoryImages/${activity.category}.jpg`}></Image>
-      <CardContent>
-        <CardHeader>{activity.title}</CardHeader>
-        <CardMeta>
-          <span>{activity.date}</span>
-        </CardMeta>
-        <CardDescription>{activity.description}</CardDescription>
-      </CardContent>
 
-      <CardContent extra>
-        <ButtonGroup widths="6">
-          <Button
-            onClick={() => openForm(activity.id)}
-            basic
-            color="blue"
-            content="Edit"
-          ></Button>
-          <Button
-            basic
-            color="grey"
-            content="Cancel"
-            onClick={cancelSelectedActivity}
-          ></Button>
-        </ButtonGroup>
-      </CardContent>
-    </Card>
+  const { id } = useParams<{ id: string }>();
+
+  useEffect(() => {
+    if (id) loadActivity(id);
+  }, [id, loadActivity, activity]);
+
+  if (loadingInitial || !activity) return <LoadingComponent></LoadingComponent>;
+
+  return (
+    <Grid>
+      <Grid.Column width="10">
+        <ActivityDetailedHeader activity={activity} />
+        <ActivityDetailededInfo activity={activity} />
+        <ActivityDetailedChat />
+      </Grid.Column>
+      <Grid.Column width="6">
+        <ActivityDetailedSideBar />
+      </Grid.Column>
+    </Grid>
   );
-}
+});

@@ -1,61 +1,36 @@
 import { observer } from "mobx-react-lite";
-import { SyntheticEvent, useState } from "react";
-import { Button, Item, Label, Segment } from "semantic-ui-react";
+import { Fragment, useEffect } from "react";
+import { Header } from "semantic-ui-react";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useStore } from "../../../app/stores/store";
+import ActivityListItem from "./ActivityListItem";
 
 export default observer(function ActivitiesList() {
-  const [target, setTarget] = useState<string>();
   const { activityStore } = useStore();
-  const {
-    activitiesByDate: activities,
-    loading: submitting,
-    deleteActivity,
-  } = activityStore;
+  const { groupedActivities, loadingInitial, loadingActivities } =
+    activityStore;
 
-  function handleDeleteActivity(
-    e: SyntheticEvent<HTMLButtonElement>,
-    id: string
-  ) {
-    setTarget(e.currentTarget.name);
-    deleteActivity(id);
-  }
+  useEffect(() => {
+    if (groupedActivities.length <= 1) loadingActivities();
+  });
+  if (loadingInitial || !groupedActivities)
+    return <LoadingComponent></LoadingComponent>;
 
   return (
-    <Segment>
-      <Item.Group>
-        {activities.map((activity) => (
-          <Item key={activity.id}>
-            {/* if(submitting) return <LoadingComponent></LoadingComponent> */}
-            <Item.Content>
-              <Item.Header as="a">{activity.title}</Item.Header>
-              <Item.Meta>{activity.date}</Item.Meta>
-              <Item.Description>
-                <div>{activity.description}</div>
-                <div>
-                  {activity.city}, {activity.venue}
-                </div>
-              </Item.Description>
-              <Item.Extra>
-                <Button
-                  floated="right"
-                  content="View"
-                  color="blue"
-                  onClick={() => activityStore.selectActivity(activity.id)}
-                />
-                <Button
-                  name={activity.id}
-                  floated="right"
-                  content="Delete"
-                  color="red"
-                  loading={submitting && target === activity.id}
-                  onClick={(event) => handleDeleteActivity(event, activity.id)}
-                />
-                <Label basic content={activity.category} />
-              </Item.Extra>
-            </Item.Content>
-          </Item>
-        ))}
-      </Item.Group>
-    </Segment>
+    <>
+      {groupedActivities.map(([date, activities]) => {
+        return (
+          <Fragment key={date}>
+            <Header sub color="teal">
+              {date}
+            </Header>
+
+            {activities.map((activity) => {
+              return <ActivityListItem key={activity.id} activity={activity} />;
+            })}
+          </Fragment>
+        );
+      })}
+    </>
   );
 });

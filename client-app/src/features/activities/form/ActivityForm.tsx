@@ -1,5 +1,7 @@
 import { observer } from "mobx-react-lite";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router";
+import { Link } from "react-router-dom";
 import {
   Button,
   Form,
@@ -7,36 +9,75 @@ import {
   FormTextArea,
   Segment,
 } from "semantic-ui-react";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { Activity } from "../../../app/models/activity";
 import { useStore } from "../../../app/stores/store";
 
 export default observer(function ActivityForm() {
   const { activityStore } = useStore();
+  const history = useHistory();
+
   const {
     selectedActivity,
-    closeForm,
     createActivity,
     updateActivity,
     loading,
+    loadActivity,
+    loadingInitial,
   } = activityStore;
-  let initialState = selectedActivity ?? {
-    id: "",
-    title: "",
-    category: "",
-    description: "",
-    date: "",
-    city: "",
-    venue: "",
-  };
-  const [activity, setActivity] = useState(initialState);
+
+  const { id } = useParams<{ id: string }>();
+
+  let initialState =
+    selectedActivity && id
+      ? selectedActivity
+      : {
+          id: "",
+          title: "",
+          category: "",
+          description: "",
+          date: Date(),
+          city: "",
+          venue: "",
+        };
+
+  useEffect(() => {
+    loadActivity(id);
+    if (selectedActivity) {
+      setActivity(selectedActivity);
+    } else {
+      setActivity({
+        id: "",
+        title: "",
+        category: "",
+        description: "",
+        date: "",
+        city: "",
+        venue: "",
+      });
+    }
+  }, [loadActivity, id, selectedActivity]);
+
+  const [activity, setActivity] = useState<Activity>(initialState);
+
   function handleInputChange(
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
     const { name, value } = event.target;
     setActivity({ ...activity, [name]: value });
   }
+
   function handleSubmit() {
-    activity.id ? updateActivity(activity) : createActivity(activity);
+    activity.id
+      ? updateActivity(activity).then(() => {
+          history.push(`/activities/${activity.id}`);
+        })
+      : createActivity(activity).then(() => {
+          history.push(`/activities/${activity.id}`);
+        });
   }
+  if (id && (!selectedActivity || loadingInitial))
+    return <LoadingComponent></LoadingComponent>;
   return (
     <Segment clearing>
       <Form onSubmit={handleSubmit} autoComplete="off">
@@ -85,8 +126,9 @@ export default observer(function ActivityForm() {
           loading={loading}
         />
         <Button
-          onClick={closeForm}
           floated="right"
+          as={Link}
+          to={id ? `/activities/${id}` : "/activities"}
           type="button"
           content="Cancel"
         />

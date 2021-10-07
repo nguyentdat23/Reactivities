@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Application.Core;
 using Application.Activities;
 using API.Extensions;
+using FluentValidation.AspNetCore;
 
 namespace API
 {
@@ -25,7 +26,10 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddFluentValidation(config =>
+            {
+                config.RegisterValidatorsFromAssemblyContaining<Create>();
+            });
             services.AddApplicationExtensions(_config);
         }
 
@@ -51,7 +55,7 @@ namespace API
             {
                 endpoints.MapControllers();
             });
-            
+
         }
     }
 }
