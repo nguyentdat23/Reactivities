@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { observer } from "mobx-react-lite";
 import { Fragment } from "react";
 import { Header, Item, Segment } from "semantic-ui-react";
@@ -13,7 +14,7 @@ export default observer(function ActivityList() {
         return (
           <Fragment key={date}>
             <Header sub color="teal">
-              {date}
+             {date}
             </Header>
             <Segment>
               <Item.Group>

@@ -34,6 +34,7 @@ function App() {
                   path={["/createActivity", "/editActivity/:id"]}
                   component={ActivityForm}
                 ></Route>
+                <Route path="/manage/:id" component={ActivityForm}></Route>
                 <Route path="/errors" component={TestErrors}></Route>
                 <Route path="/server-error" component={ServerError}></Route>
                 <Route path="" component={NotFound}></Route>

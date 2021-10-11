@@ -4,11 +4,6 @@ import { history } from '../..';
 import { Activity } from '../models/activity';
 import { store } from '../stores/store';
 
-const sleep = (delay: number) => {
-	return new Promise((resolve) => {
-		setTimeout(resolve, delay);
-	});
-};
 axios.defaults.baseURL = 'https://localhost:5001/api';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
@@ -23,23 +18,20 @@ axios.interceptors.response.use(
 				history.push('/notfound');
 				break;
 			case 400:
-				// if(typeof data === 'string'){
-				// 	toast.error(data);
-				// }
-				console.log(data, config);
+				if(typeof data === 'string'){
+					toast.error(data);
+				}
+				console.log('data:' + data, ', config: ' + config);
+				if (config.method === 'get' && data.errors.hasOwnProperty('id')) {
+					history.push('/notfound');
+				}
 				if (data.errors) {
 					const modalStateError = [];
 					for (const key in data.errors) {
 						if (data.errors[key]) modalStateError.push(data.errors[key]);
 					}
 					throw modalStateError.flat();
-				} else {
-					toast.error(data);
-				}
-
-				if (config.method === 'get' && data.errors.hasOwnProperty('id')) {
-					history.push('/notfound');
-				}
+				} 
 				break;
 			case 500:
 				store.commonStore.setServerError(data);
