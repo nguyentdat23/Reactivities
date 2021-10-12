@@ -73,7 +73,9 @@ export default observer(function ActivityForm() {
     venue: Yup.string().required('The activity venue is required.'),
     city: Yup.string().required('The activity city is required.'),
   })
+
   Yup.date().typeError("Date is required");
+
   function handleFormSubmit(activity: Activity) {
     activity.id
       ? updateActivity(activity).then(() => {
@@ -83,6 +85,7 @@ export default observer(function ActivityForm() {
         history.push(`/activities/${activity.id}`);
       });
   }
+  
   if (id && (!selectedActivity || loadingInitial))
     return <LoadingComponent></LoadingComponent>;
   return (
