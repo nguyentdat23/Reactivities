@@ -20,7 +20,11 @@ namespace API.Extensions
 
             }).AddEntityFrameworkStores<DataContext>()
             .AddSignInManager<SignInManager<AppUser>>();
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
 
+            });
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>

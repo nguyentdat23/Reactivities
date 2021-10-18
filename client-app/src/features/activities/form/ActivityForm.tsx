@@ -85,7 +85,7 @@ export default observer(function ActivityForm() {
         history.push(`/activities/${activity.id}`);
       });
   }
-  
+
   if (id && (!selectedActivity || loadingInitial))
     return <LoadingComponent></LoadingComponent>;
   return (
@@ -96,7 +96,7 @@ export default observer(function ActivityForm() {
         initialValues={activity}
         validationSchema={validationSchema}
         onSubmit={values => handleFormSubmit(values)}>
-        {({ isValid, isSubmitting,dirty, handleSubmit }) => (
+        {({ isValid, isSubmitting, dirty, handleSubmit }) => (
           <Form className="ui form" onSubmit={handleSubmit} autoComplete="off">
             <MyTextInput name='title' placeholder='Title'></MyTextInput>
             <MyTextArea

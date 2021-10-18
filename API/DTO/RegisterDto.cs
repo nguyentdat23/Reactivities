@@ -11,9 +11,10 @@ namespace API.DTO
         public string DisplayName { get; set; }
         [Required]
         public string Email { get; set; }
-        [Required]
-        [RegularExpression("")]
+        [Required]        
         public string Password { get; set; }
+        [Required]       
+        public string ConfirmPassword { get; set; }
         [Required]
         public string Username { get; set; }
     }

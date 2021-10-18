@@ -14,7 +14,7 @@ export default observer(function ActivitiesList() {
     if (groupedActivities.length <= 1) loadingActivities();
   });
   if (loadingInitial || !groupedActivities)
-    return <LoadingComponent></LoadingComponent>;
+    return <LoadingComponent content="Loading activities..."></LoadingComponent>;
 
   return (
     <>

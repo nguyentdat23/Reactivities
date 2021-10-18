@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-
+    [AllowAnonymous]
     public class ActivitiesController : BaseApiController
     {
-
         [HttpGet]
         public async Task<ActionResult<List<Activity>>> GetActivities(CancellationToken cancellationToken)
         {

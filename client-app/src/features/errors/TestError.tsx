@@ -6,6 +6,7 @@ import ValidationErrors from "./ValidationErrors";
 export default function TestErrors() {
   const baseUrl = "https://localhost:5001/api/";
   const [errors, setErrors] = useState(null);
+  
   function handleNotFound(): void {
     axios
       .get(baseUrl + "buggy/not-found")

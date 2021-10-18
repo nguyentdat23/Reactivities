@@ -31,17 +31,21 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
-            if (user == null) return Unauthorized();
+            if (user == null) return Unauthorized("The username or password you entered is incorrect.");
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             if (result.Succeeded)
             {
                 return (GetUserDto(user));
             }
-            return Unauthorized();
+            return Unauthorized("The passsword you entered is incorrect.");
         }
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
+            if(registerDto.Password != registerDto.ConfirmPassword)
+            {
+                return BadRequest("Password and confirm password must match");
+            }
             var user = new AppUser
             {
                 Email = registerDto.Email,
@@ -60,7 +64,6 @@ namespace API.Controllers
                 }
                 return BadRequest(errors.TrimEnd());
             }
-
             return Ok(GetUserDto(user));
         }
         [Authorize]
@@ -83,7 +86,7 @@ namespace API.Controllers
                 Token = _tokenService.CreateToken(appUser),
                 Username = appUser.UserName
             };
-            return userDto;
+         return userDto;
         }
     }
 }

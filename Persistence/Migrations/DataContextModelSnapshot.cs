@@ -16,6 +16,21 @@ namespace Persistence.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.10");
 
+            modelBuilder.Entity("ActivityAppUser", b =>
+                {
+                    b.Property<Guid>("ActivitiesId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AttendeesId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ActivitiesId", "AttendeesId");
+
+                    b.HasIndex("AttendeesId");
+
+                    b.ToTable("ActivityAppUser");
+                });
+
             modelBuilder.Entity("Domain.Activity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -241,6 +256,21 @@ namespace Persistence.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("ActivityAppUser", b =>
+                {
+                    b.HasOne("Domain.Activity", null)
+                        .WithMany()
+                        .HasForeignKey("ActivitiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("AttendeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
