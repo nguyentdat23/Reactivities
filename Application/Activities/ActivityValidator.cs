@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Activities
 {
-    public class ActivityValidator : AbstractValidator<Activity>
+    public class ActivityValidator : AbstractValidator<Domain.Activity>
     {
         public ActivityValidator()
         {
