@@ -31,7 +31,7 @@ namespace API.Controllers
         }
         [Authorize(Policy = "IsActivityHost")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditActivity(Guid id, Domain.Activity activity)
+        public async Task<IActionResult> EditActivity(Guid id, Activity activity)
         {
             activity.Id = id;
             return HandleResult(await MyMediator.Send(new Edit.Command { Activity = activity }));

@@ -34,7 +34,7 @@ export default observer(function ActivityDetaileds() {
         <ActivityDetailedChat />
       </Grid.Column>
       <Grid.Column width="6">
-        <ActivityDetailedSideBar />
+        {activity.attendees && <ActivityDetailedSideBar activity={activity} attendees={activity.attendees} />}
       </Grid.Column>
     </Grid>
   );

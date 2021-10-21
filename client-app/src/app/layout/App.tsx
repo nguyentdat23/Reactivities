@@ -26,7 +26,7 @@ function App() {
     } else {
       commonStore.setAppLoaded();
     }
-  }, [commonStore])
+  }, [accountStore, commonStore])
   
   if (!commonStore.appLoaded) return <LoadingComponent content='Loading app...'></LoadingComponent>
 

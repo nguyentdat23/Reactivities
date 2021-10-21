@@ -9,7 +9,7 @@ import {
   Segment,
 } from "semantic-ui-react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { Activity } from "../../../app/models/activity";
+import { ActivityFormValue } from "../../../app/models/activity";
 import { useStore } from "../../../app/stores/store";
 import * as Yup from 'yup';
 import MyTextInput from "../../../app/common/form/MyTextInput";
@@ -26,44 +26,17 @@ export default observer(function ActivityForm() {
     selectedActivity,
     createActivity,
     updateActivity,
-    loading,
     loadActivity,
     loadingInitial,
   } = activityStore;
 
   const { id } = useParams<{ id: string }>();
 
-  let initialState =
-    selectedActivity && id
-      ? selectedActivity
-      : {
-        id: "",
-        title: "",
-        category: "",
-        description: "",
-        date: new Date(),
-        city: "",
-        venue: "",
-      };
-
   useEffect(() => {
-    loadActivity(id);
-    if (selectedActivity) {
-      setActivity(selectedActivity);
-    } else {
-      setActivity({
-        id: "",
-        title: "",
-        category: "",
-        description: "",
-        date: new Date(),
-        city: "",
-        venue: "",
-      });
-    }
+    if(id) loadActivity(id).then(activity => setActivity(new ActivityFormValue(activity)));
   }, [loadActivity, id, selectedActivity]);
 
-  const [activity, setActivity] = useState<Activity>(initialState);
+  const [activity, setActivity] = useState<ActivityFormValue>(new ActivityFormValue());
 
   const validationSchema = Yup.object({
     title: Yup.string().required('The activity title is required.'),
@@ -76,7 +49,8 @@ export default observer(function ActivityForm() {
 
   Yup.date().typeError("Date is required");
 
-  function handleFormSubmit(activity: Activity) {
+  function handleFormSubmit(activity: ActivityFormValue) {
+    console.log(typeof activity);
     activity.id
       ? updateActivity(activity).then(() => {
         history.push(`/activities/${activity.id}`);
@@ -127,7 +101,7 @@ export default observer(function ActivityForm() {
               disabled={isSubmitting || !dirty || !isValid}
               type="submit"
               content="Confirm"
-              loading={loading} />
+              loading={isSubmitting} />
             <Button
               floated="right"
               as={Link}
