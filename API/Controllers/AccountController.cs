@@ -4,6 +4,7 @@ using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByNameAsync(loginDto.UserName);
+            var user = await _userManager.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.UserName == loginDto.UserName);
             if (user == null) return Unauthorized("The username or password you entered is incorrect.");
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             if (result.Succeeded)
@@ -42,7 +43,7 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
-            if(registerDto.Password != registerDto.ConfirmPassword)
+            if (registerDto.Password != registerDto.ConfirmPassword)
             {
                 return BadRequest("Password and confirm password must match");
             }
@@ -70,7 +71,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+            var user = await _userManager.Users.Include(u => u.Photos).FirstOrDefaultAsync(u => u.Email == User.FindFirstValue(ClaimTypes.Email));
             if (user == null)
             {
                 return NotFound();
@@ -82,11 +83,11 @@ namespace API.Controllers
             var userDto = new UserDto
             {
                 DisplayName = appUser.DisplayName,
-                Image = null,
+                Image = appUser.Photos?.FirstOrDefault(p => p.IsMain)?.Url,
                 Token = _tokenService.CreateToken(appUser),
                 Username = appUser.UserName
             };
-         return userDto;
+            return userDto;
         }
     }
 }

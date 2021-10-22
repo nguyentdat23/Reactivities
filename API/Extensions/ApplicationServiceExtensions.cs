@@ -1,6 +1,7 @@
 ﻿using Application.Activities;
 using Application.Core;
 using Application.Interfaces;
+using Infrastructure.Photo;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace API.Extensions
 {
     public static class ApplicationServiceExtensions
     {
-        public static  IServiceCollection AddApplicationExtensions(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddApplicationExtensions(this IServiceCollection services, IConfiguration config)
         {
             services.AddSwaggerGen(c =>
             {
@@ -34,6 +35,9 @@ namespace API.Extensions
             services.AddMediatR(typeof(ListActivities.Query).Assembly);
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
             services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            services.Configure<CloudinarySetting>(config.GetSection("Cloudinary"));
+
             return services;
         }
     }
