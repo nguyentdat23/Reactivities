@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { history } from '../..';
 import { Activity, ActivityFormValue } from '../models/activity';
+import { Photo, Profile } from '../models/profile';
 import { User, UserLoginFormValue, UserRegisterFormValue } from '../models/user';
 import { store } from '../stores/store';
 
@@ -14,7 +15,8 @@ axios.interceptors.response.use(
 	async (res) => {
 		return res;
 	},
-	(err: AxiosError) => {		
+	(err: AxiosError) => {
+		console.log(err);
 		const { data, status: statusCode, config } = err.response!;
 		switch (statusCode) {
 			case 401:
@@ -52,10 +54,10 @@ axios.interceptors.request.use(
 		const token = store.commonStore.token;
 		if (token) config.headers.Authorization = `Bearer ${token}`;
 		config.headers['Content-Type'] = 'application/json';
-		config.timeout = 5000;
-		config.timeoutErrorMessage = "Couldn't connect to server!!!";
+		config.timeout = 10000;
+		config.timeoutErrorMessage = "requets timeout";
 		return config;
-	},err =>{
+	}, err => {
 		console.log(err);
 	}
 );
@@ -78,7 +80,7 @@ const Activities = {
 	create: (activity: ActivityFormValue) => requests.post<void>('activities', activity),
 	update: (activity: ActivityFormValue) => requests.put<void>(`activities/${activity.id}`, activity),
 	delete: (id: string) => requests.del<void>(`activities/${id}`),
-	attend: (id:string) => requests.post<void>(`activities/${id}/attend`, {})
+	attend: (id: string) => requests.post<void>(`activities/${id}/attend`, {})
 };
 
 const Account = {
@@ -86,8 +88,24 @@ const Account = {
 	login: (user: UserLoginFormValue) => requests.post<User>('account/login', user),
 	register: (user: UserRegisterFormValue) => requests.post<User>('account/register', user)
 }
+
+const Profiles = {
+	get: (username: string) => requests.get<Profile>(`/profile/${username}`),
+	uploadPhoto: (file: Blob) => {
+		let formData = new FormData();
+		formData.append('File', file);
+		return axios.post<Photo>('photos', formData, {
+			headers: { 'Content-type': 'multipart/form-data' }
+		})
+	},
+	setMainPhoto: (id: string) => requests.post(`/photos/${id}/setMain`, {}),
+	deletePhoto: (id: string) => requests.del(`/photos/${id}`),
+	updateProfile: (profile: Profile) => requests.put(`/profile/`, profile)
+}
+
 const agent = {
 	Activities,
-	Account
+	Account,
+	Profiles
 };
 export default agent;

@@ -1,5 +1,5 @@
 import "./style.css";
-import { Container, Modal } from "semantic-ui-react";
+import { Container } from "semantic-ui-react";
 import NavBar from "./NavBar";
 import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 import { observer } from "mobx-react-lite";
@@ -16,6 +16,7 @@ import { useStore } from "../stores/store";
 import { useEffect } from "react";
 import LoadingComponent from "./LoadingComponent";
 import ModalContainer from "../common/modal/ModalContainer";
+import ProfilePage from "../../features/profiles/ProfilePage";
 
 function App() {
   const { accountStore, commonStore } = useStore();
@@ -27,7 +28,7 @@ function App() {
       commonStore.setAppLoaded();
     }
   }, [accountStore, commonStore])
-  
+
   if (!commonStore.appLoaded) return <LoadingComponent content='Loading app...'></LoadingComponent>
 
   return (
@@ -54,6 +55,7 @@ function App() {
                     component={ActivityForm}
                   ></Route>
                   <Route path="/manage/:id" component={ActivityForm}></Route>
+                  <Route path='/profile/:username' component={ProfilePage}></Route>
                 </>}
                 <Route path="/login" component={LoginForm}></Route>
                 <Route path="/errors" component={TestErrors}></Route>

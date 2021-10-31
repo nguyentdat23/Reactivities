@@ -39,7 +39,7 @@ export default class AccountStore {
     getUser = async () => {
         try {
             const user = await agent.Account.current();
-            runInAction(()=>{
+            runInAction(() => {
                 this.user = user;
             })
         } catch (error) {
@@ -59,5 +59,8 @@ export default class AccountStore {
         catch (error) {
             throw error;
         }
-    } 
+    }
+    setImage = (image: string) => {
+        if (this.user) this.user.image = image;
+    }
 }

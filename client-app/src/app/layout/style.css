@@ -51,5 +51,11 @@ body {
   font-size: 1.7em;
   font-weight: normal;
 }
-
+.truncate {
+  /* box-sizing: border-box; */
+  /* width: 100%; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 /*end home page styles*/

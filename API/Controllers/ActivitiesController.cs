@@ -25,7 +25,7 @@ namespace API.Controllers
             return HandleResult(await MyMediator.Send(new Details.Query { Id = id }));
         }
         [HttpPost]
-        public async Task<IActionResult> CreateActivity([FromBody] Domain.Activity activity)
+        public async Task<IActionResult> CreateActivity([FromBody] Activity activity)
         {
             return HandleResult(await MyMediator.Send(new Create.Command { Activity = activity }));
         }
