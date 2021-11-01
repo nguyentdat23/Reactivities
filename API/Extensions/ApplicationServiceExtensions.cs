@@ -29,7 +29,10 @@ namespace API.Extensions
             {
                 c.AddPolicy("CorsPolicy", p =>
                 {
-                    p.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+                    p.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithOrigins("https://localhost:3000", "http://localhost:3000");
                 });
             });
             services.AddMediatR(typeof(ListActivities.Query).Assembly);
@@ -37,7 +40,7 @@ namespace API.Extensions
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             services.Configure<CloudinarySetting>(config.GetSection("Cloudinary"));
-
+            services.AddSignalR();
             return services;
         }
     }
