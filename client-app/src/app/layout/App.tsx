@@ -55,6 +55,8 @@ function App() {
                     component={ActivityForm}
                   ></Route>
                   <Route path="/manage/:id" component={ActivityForm}></Route>
+
+
                   <Route path='/profile/:username' component={ProfilePage}></Route>
                 </>}
                 <Route path="/login" component={LoginForm}></Route>

@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { request } from 'http';
 import { toast } from 'react-toastify';
 import { history } from '../..';
 import { Activity, ActivityFormValue } from '../models/activity';
@@ -54,7 +55,6 @@ axios.interceptors.request.use(
 		const token = store.commonStore.token;
 		if (token) config.headers.Authorization = `Bearer ${token}`;
 		config.headers['Content-Type'] = 'application/json';
-		config.timeout = 10000;
 		config.timeoutErrorMessage = "requets timeout";
 		return config;
 	}, err => {
@@ -100,7 +100,9 @@ const Profiles = {
 	},
 	setMainPhoto: (id: string) => requests.post(`/photos/${id}/setMain`, {}),
 	deletePhoto: (id: string) => requests.del(`/photos/${id}`),
-	updateProfile: (profile: Profile) => requests.put(`/profile/`, profile)
+	updateProfile: (profile: Profile) => requests.put(`/profile/`, profile),
+	updateFollowing: (username: string) => requests.post(`/follow/${username}`, {}),
+	listFollowing: (username: string, predicate: string) => requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`)
 }
 
 const agent = {
