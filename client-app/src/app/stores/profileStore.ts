@@ -44,7 +44,8 @@ export default class ProfileStore {
         try {
             const profile = await agent.Profiles.get(username);
             runInAction(() => {
-                this.profile = profile;
+                if (profile)
+                    this.profile = profile;
                 this.loadingProfile = false;
             })
         } catch (error) {
@@ -122,6 +123,7 @@ export default class ProfileStore {
             runInAction(() => this.isSubmitting = false);
         }
     }
+
     updateFollowing = async (username: string, following: boolean) => {
         this.loading = true;
         const currentUser = store.accountStore.user;
@@ -129,14 +131,14 @@ export default class ProfileStore {
             await agent.Profiles.updateFollowing(username);
             store.activityStore.updateAttendeeFollowing(username);
             const currentProfile = await agent.Profiles.get(currentUser!.username);
-            runInAction(() => {
-                //on someone profile
+            runInAction(() => {              
                 if (this.profile && (this.profile?.username === username || this.profile?.username === currentUser?.username)) {
                     if (following) {
                         if (this.profile?.username !== currentUser?.username) {
                             // on someone profile, add my profile to followers list on follow event 
                             // if only we're on followers list 
-                            if (this.activeTab === 3) this.followList.push(currentProfile);
+
+                            if (this.activeTab === 3 && currentProfile) this.followList.push(currentProfile);
                             this.profile.followersCount++;
                         } else {
                             this.profile.followingCount++;
@@ -145,7 +147,7 @@ export default class ProfileStore {
                         if (this.profile?.username !== currentUser?.username) {
                             // on someone's profile, remove my profile from followers list on unfollow event
                             // if only we're on followers list 
-                            if (this.activeTab === 3) this.followList = this.followList.filter(profile => profile.username !== currentProfile.username);
+                            if (this.activeTab === 3 && currentProfile) this.followList = this.followList.filter(profile => profile.username !== currentProfile.username);
                             this.profile.followersCount--;
                         } else {
                             this.profile.followingCount--;
@@ -156,6 +158,7 @@ export default class ProfileStore {
                     }
                     this.profile.following = !this.profile.following;
                 }
+                this.loading = false;
                 this.followList.forEach(profile => {
                     if (profile.username === username) {
                         profile.following = !profile.following;
@@ -166,7 +169,6 @@ export default class ProfileStore {
                         }
                     }
                 })
-                this.loading = false;
             })
         } catch (error) {
             console.log(error);
@@ -181,7 +183,8 @@ export default class ProfileStore {
             if (this.profile) {
                 const followings = await agent.Profiles.listFollowing(this.profile?.username, predicate);
                 runInAction(() => {
-                    this.followList = followings;
+                    if (followings)
+                        this.followList = followings;
                     this.loadingFollowings = false;
                 });
             }

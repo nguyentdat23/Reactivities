@@ -17,9 +17,11 @@ import { useEffect } from "react";
 import LoadingComponent from "./LoadingComponent";
 import ModalContainer from "../common/modal/ModalContainer";
 import ProfilePage from "../../features/profiles/ProfilePage";
+import { history } from '../..';
+
 
 function App() {
-  const { accountStore, commonStore } = useStore();
+  const { accountStore, commonStore, modalStore } = useStore();
 
   useEffect(() => {
     if (commonStore.token) {
@@ -30,7 +32,9 @@ function App() {
   }, [accountStore, commonStore])
 
   if (!commonStore.appLoaded) return <LoadingComponent content='Loading app...'></LoadingComponent>
-
+  if (!accountStore.user) {
+    history.push('/');
+  }
   return (
     <>
       <ToastContainer position='bottom-right' hideProgressBar />
@@ -55,8 +59,6 @@ function App() {
                     component={ActivityForm}
                   ></Route>
                   <Route path="/manage/:id" component={ActivityForm}></Route>
-
-
                   <Route path='/profile/:username' component={ProfilePage}></Route>
                 </>}
                 <Route path="/login" component={LoginForm}></Route>

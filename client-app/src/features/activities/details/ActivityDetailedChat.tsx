@@ -46,7 +46,7 @@ export default observer(function ActivityDetailedChat({ activityId }: Props) {
               <Field name='body'>
                 {(props: FieldProps) => (
                   <div style={{ position: 'relative' }}>
-                    <Loader activit={isSubmitting} />
+                    <Loader active={isSubmitting} />
                     <textarea
                       placeholder='Enter your comment'
                       rows={2}

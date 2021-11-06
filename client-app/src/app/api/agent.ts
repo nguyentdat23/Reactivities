@@ -3,21 +3,35 @@ import { request } from 'http';
 import { toast } from 'react-toastify';
 import { history } from '../..';
 import { Activity, ActivityFormValue } from '../models/activity';
+import { PaginatedResult, Pagination } from '../models/pagination';
 import { Photo, Profile } from '../models/profile';
 import { User, UserLoginFormValue, UserRegisterFormValue } from '../models/user';
 import { store } from '../stores/store';
 
+const sleep = (delay: number) => {
+	return new Promise((resolve) => {
+		setTimeout(resolve, delay)
+	})
+}
+
 axios.defaults.baseURL = 'https://localhost:5001/api';
+
 const responseBody = <T>(response: AxiosResponse<T>) => {
-	return response.data;
+	if (response)
+		return response.data;
 }
 
 axios.interceptors.response.use(
 	async (res) => {
+		await sleep(600);
+		const pagination = res.headers['pagination'];
+		if (pagination) {
+			res.data = new PaginatedResult(res.data, JSON.parse(pagination));
+			return res as AxiosResponse<PaginatedResult<any>>
+		}
 		return res;
 	},
-	(err: AxiosError) => {
-		console.log(err);
+	(err: AxiosError | any) => {
 		const { data, status: statusCode, config } = err.response!;
 		switch (statusCode) {
 			case 401:
@@ -75,7 +89,7 @@ const requests = {
 };
 
 const Activities = {
-	list: () => requests.get<Activity[]>('activities'),
+	list: (params: URLSearchParams) => axios.get<PaginatedResult<Activity[]>>('/activities', { params }).then(responseBody),
 	details: (id: string) => requests.get<Activity>(`activities/${id}`),
 	create: (activity: ActivityFormValue) => requests.post<void>('activities', activity),
 	update: (activity: ActivityFormValue) => requests.put<void>(`activities/${activity.id}`, activity),

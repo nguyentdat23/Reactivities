@@ -11,6 +11,7 @@ interface Props {
 
 export default function ActivityListItem({ activity }: Props) {
   const { accountStore: { user } } = useStore();
+
   return (
     <Segment.Group>
 
@@ -31,7 +32,6 @@ export default function ActivityListItem({ activity }: Props) {
                 {activity.title}
               </Item.Header>
               <Item.Description> {user?.username === activity.host?.username ? <Label color='orange' basic>Hosted by you</Label> : <>Hosted by <Link to={`/profile/${activity.host?.username}`}>{activity.host?.displayName}</Link></>}</Item.Description>
-
             </Item.Content>
           </Item>
         </Item.Group>
@@ -43,7 +43,7 @@ export default function ActivityListItem({ activity }: Props) {
         </span>
       </Segment>
       <Segment secondary>
-        <ActivityListItemAttendee attendees={activity.attendees} />
+        <ActivityListItemAttendee attendees={activity.attendees} user={user}/>
       </Segment>
       <Segment clearing>
         <span>{activity.description}</span>

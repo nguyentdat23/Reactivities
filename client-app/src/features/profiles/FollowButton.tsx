@@ -17,7 +17,6 @@ export default observer(
         function handleFollow(e: SyntheticEvent, username: string) {
             e.preventDefault();
             profile.following ? updateFollowing(username, false) : updateFollowing(username, true);
-
         }
 
         if (accountStore.user?.username === profile.username) return null;
