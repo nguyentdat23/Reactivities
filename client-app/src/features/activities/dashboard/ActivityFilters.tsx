@@ -7,7 +7,7 @@ export default observer(function ActivityFilters() {
 
   const { activityStore: { predicate, setPredicate } } = useStore();
 
-
+  
   return (
     <>
       <Menu vertical size="large" style={{ width: "100%" }}>

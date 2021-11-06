@@ -6,8 +6,6 @@ import { format } from "date-fns";
 import { store } from "./store";
 import { Profile } from "../models/profile";
 import { Pagination, PagingParams } from "../models/pagination";
-import { registerInterceptor } from "mobx/dist/internal";
-
 
 export default class ActivityStore {
   activityRegistry = new Map<string, Activity>();

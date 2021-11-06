@@ -1,18 +1,20 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 import agent from "../api/agent";
-import { Photo, Profile } from "../models/profile";
+import { Photo, Profile, UserEvent } from "../models/profile";
 import { store } from "./store";
 
 export default class ProfileStore {
     profile: Profile | null = null;
+    followList: Profile[] = [];
+    events: UserEvent[] = [];
     loadingProfile = false;
     loadingFollowings = false;
     uploading = false;
     isSubmitting = false;
     loading = false;
     deleting = false;
-    followList: Profile[] = [];
     activeTab = 0;
+    predicate: string = 'future';
 
     constructor() {
         makeAutoObservable(this);
@@ -22,16 +24,36 @@ export default class ProfileStore {
                 if (activeTab === 3 || activeTab === 4) {
                     const predicate = activeTab === 3 ? 'follower' : 'following';
                     this.loadFollowings(predicate);
-                } else {
+                }
+                else {
                     this.followList = [];
                 }
             }
+        );
+
+        reaction(
+            () => this.predicate,
+            () => {
+                this.events = [];
+                this.loadEvents();
+            }
         )
+    }
+
+    get axiosParams() {
+        const params = new URLSearchParams();
+        params.append('predicate', this.predicate);
+        return params;
     }
 
     setActiveTab = (activeTab: any) => {
         this.activeTab = activeTab;
     }
+
+    setPredicate = (predicate: string) => {
+        this.predicate = predicate;
+    }
+
     get isCurrentUser() {
         if (store.accountStore.user && this.profile) {
             return store.accountStore.user.username === this.profile.username;
@@ -43,9 +65,12 @@ export default class ProfileStore {
         this.loadingProfile = true;
         try {
             const profile = await agent.Profiles.get(username);
+            const events = await agent.Profiles.getEvents(username, this.axiosParams);
             runInAction(() => {
                 if (profile)
                     this.profile = profile;
+                if (events)
+                    this.events = events;
                 this.loadingProfile = false;
             })
         } catch (error) {
@@ -108,6 +133,7 @@ export default class ProfileStore {
             runInAction(() => this.deleting = false);
         }
     }
+
     updateProfile = async (profile: Profile) => {
         this.isSubmitting = true;
         try {
@@ -131,7 +157,7 @@ export default class ProfileStore {
             await agent.Profiles.updateFollowing(username);
             store.activityStore.updateAttendeeFollowing(username);
             const currentProfile = await agent.Profiles.get(currentUser!.username);
-            runInAction(() => {              
+            runInAction(() => {
                 if (this.profile && (this.profile?.username === username || this.profile?.username === currentUser?.username)) {
                     if (following) {
                         if (this.profile?.username !== currentUser?.username) {
@@ -182,15 +208,36 @@ export default class ProfileStore {
         try {
             if (this.profile) {
                 const followings = await agent.Profiles.listFollowing(this.profile?.username, predicate);
+
                 runInAction(() => {
                     if (followings)
                         this.followList = followings;
+
+
                     this.loadingFollowings = false;
                 });
             }
         } catch (error) {
             console.log(error);
             runInAction(() => this.loadingFollowings = false);
+        }
+    }
+
+    loadEvents = async () => {
+        this.loading = true;
+        try {
+            if (this.profile) {
+                const events = await agent.Profiles.getEvents(this.profile.username, this.axiosParams);
+                runInAction(() => {
+                    if (events) {
+                        this.events = events;
+                    }
+                    this.loading = false;
+                })
+            };
+        } catch (error) {
+            console.log(error);
+            this.loading = false;
         }
     }
 }

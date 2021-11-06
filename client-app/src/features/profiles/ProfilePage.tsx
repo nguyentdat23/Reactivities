@@ -11,6 +11,7 @@ export default observer(function ProfilePage() {
     const { profileStore } = useStore();
     const { username } = useParams<{ username: string }>();
     const { loadingProfile, loadProfile, profile, setActiveTab } = profileStore;
+    
     useEffect(() => {
         loadProfile(username);
         return () => {

@@ -30,7 +30,7 @@ export default observer(function ProfilePhoto({ profile }: Props) {
         deletePhoto(id);
     }
     return (
-        <Tab.Pane>
+        <Tab.Pane loading={loading}>
             <Grid>
                 <Grid.Column width={16}>
                     <Header floated='left' icon='image' content='Photos'></Header>

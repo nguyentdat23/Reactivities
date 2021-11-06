@@ -19,6 +19,7 @@ namespace Application.Profiles
     {
         public class Query : IRequest<Result<List<UserActivityDto>>>
         {
+            public string Username { get; set; }
             public string Predicate { get; set; }
         }
         public class Handler : IRequestHandler<Query, Result<List<UserActivityDto>>>
@@ -38,25 +39,34 @@ namespace Application.Profiles
             {
                 var query = _context.Activities
                     .OrderBy(d => d.Date)
-                    .ProjectTo<UserActivityDto>(_autoMapper.ConfigurationProvider)
+                    .ProjectTo<ActivityDto>(_autoMapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUserName() })
+                    .Where(a => a.HostUserName == request.Username || a.Attendees.Any(a => a.Username == request.Username))
+                    .ProjectTo<UserActivityDto>(_autoMapper.ConfigurationProvider,
+                        new { currentUsername = _userAccessor.GetUserName() })
                     .AsQueryable();
+                var result = new List<UserActivityDto>();
 
                 if (request.Predicate == "hosting")
                 {
-                    query.Where(a => a.HostUsername == _userAccessor.GetUserName());
+                    result = await query.Where(a => a.HostUsername == request.Username).ToListAsync();
                 }
 
                 if (request.Predicate == "past")
                 {
-                    query.Where(d => DateTime.Compare(d.Date, DateTime.UtcNow) < 0);
+                    result = await query.Where(d => DateTime.Compare(d.Date, DateTime.Now) < 0).ToListAsync();
                 }
 
                 if (request.Predicate == "future")
                 {
-                    query.Where(d => DateTime.Compare(d.Date, DateTime.UtcNow) >= 0);
+                    result = await query.Where(d => DateTime.Compare(d.Date, DateTime.UtcNow) > 0).ToListAsync();
                 }
 
-                return Result<List<UserActivityDto>>.Success(await query.ToListAsync());
+                if (result.Count() == 0)
+                {
+                    result = await query.ToListAsync();
+
+                }
+                return Result<List<UserActivityDto>>.Success(result);
             }
         }
     }

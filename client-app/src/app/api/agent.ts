@@ -1,3 +1,4 @@
+import { triggerAsyncId } from 'async_hooks';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { request } from 'http';
 import { toast } from 'react-toastify';
@@ -116,7 +117,8 @@ const Profiles = {
 	deletePhoto: (id: string) => requests.del(`/photos/${id}`),
 	updateProfile: (profile: Profile) => requests.put(`/profile/`, profile),
 	updateFollowing: (username: string) => requests.post(`/follow/${username}`, {}),
-	listFollowing: (username: string, predicate: string) => requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`)
+	listFollowing: (username: string, predicate: string) => requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
+	getEvents: (username: string, params: URLSearchParams) => axios.get(`/profile/${username}/activities`, { params }).then(responseBody),
 }
 
 const agent = {
