@@ -132,12 +132,14 @@ export default class ActivityStore {
         try {
           const activity = await agent.Activities.details(id);
           if (activity) {
-            this.selectedActivity = activity;
             this.setActivity(activity);
+            activity.date = new Date(activity.date!);
+            this.selectedActivity = activity;
             this.setLoadingInitial(false);
+            console.log(activity);
             return activity;
           }
-
+          this.setLoadingInitial(false);
         } catch (error) {
           console.log(error);
           this.setLoadingInitial(false);

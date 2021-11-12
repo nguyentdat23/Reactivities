@@ -1,7 +1,6 @@
-import userEvent from "@testing-library/user-event";
 import { observer } from "mobx-react-lite"
 import { SyntheticEvent } from "react";
-import { Card, Tab, TabProps, Image } from "semantic-ui-react"
+import { Tab, TabProps } from "semantic-ui-react"
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import { useStore } from "../../app/stores/store";
 import ProfileListEvents from "./ProfileListEvents";

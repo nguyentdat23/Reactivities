@@ -1,5 +1,4 @@
 import { observer } from "mobx-react-lite";
-import { Link } from "react-router-dom";
 import { Image, Label, List, Popup } from "semantic-ui-react";
 import { Profile } from "../../../app/models/profile";
 import { User } from "../../../app/models/user";

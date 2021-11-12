@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { createContext } from "react";
-import { Modal } from "semantic-ui-react";
 import AccountStore from "./accountStore";
 import ActivityStore from "./activityStore";
 import CommentStore from "./commentStore";

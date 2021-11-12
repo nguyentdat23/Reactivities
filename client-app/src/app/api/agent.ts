@@ -1,21 +1,13 @@
-import { triggerAsyncId } from 'async_hooks';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { request } from 'http';
 import { toast } from 'react-toastify';
 import { history } from '../..';
 import { Activity, ActivityFormValue } from '../models/activity';
-import { PaginatedResult, Pagination } from '../models/pagination';
+import { PaginatedResult } from '../models/pagination';
 import { Photo, Profile } from '../models/profile';
 import { User, UserLoginFormValue, UserRegisterFormValue } from '../models/user';
 import { store } from '../stores/store';
 
-const sleep = (delay: number) => {
-	return new Promise((resolve) => {
-		setTimeout(resolve, delay)
-	})
-}
-
-axios.defaults.baseURL = 'https://localhost:5001/api';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 const responseBody = <T>(response: AxiosResponse<T>) => {
 	if (response)
@@ -24,7 +16,7 @@ const responseBody = <T>(response: AxiosResponse<T>) => {
 
 axios.interceptors.response.use(
 	async (res) => {
-		await sleep(600);
+	
 		const pagination = res.headers['pagination'];
 		if (pagination) {
 			res.data = new PaginatedResult(res.data, JSON.parse(pagination));

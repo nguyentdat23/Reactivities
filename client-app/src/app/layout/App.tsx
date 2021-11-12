@@ -11,17 +11,16 @@ import TestErrors from "../../features/errors/TestError";
 import { ToastContainer } from "react-toastify";
 import NotFound from "../../features/errors/NotFound";
 import ServerError from "../../features/errors/ServerError";
-import LoginForm from "../../features/users/LoginForm";
 import { useStore } from "../stores/store";
 import { useEffect } from "react";
 import LoadingComponent from "./LoadingComponent";
 import ModalContainer from "../common/modal/ModalContainer";
 import ProfilePage from "../../features/profiles/ProfilePage";
-import { history } from '../..';
+import PrivateRoute from "./PrivateRoute";
 
 
 function App() {
-  const { accountStore, commonStore, modalStore } = useStore();
+  const { accountStore, commonStore } = useStore();
 
   useEffect(() => {
     if (commonStore.token) {
@@ -32,9 +31,6 @@ function App() {
   }, [accountStore, commonStore])
 
   if (!commonStore.appLoaded) return <LoadingComponent content='Loading app...'></LoadingComponent>
-  if (!accountStore.user) {
-    history.push('/');
-  }
   return (
     <>
       <ToastContainer position='bottom-right' hideProgressBar />
@@ -47,25 +43,20 @@ function App() {
             <NavBar />
             <Container style={{ marginTop: "7em" }}>
               <Switch>
-                {accountStore.user && <>
-                  <Route
-                    exact
-                    path="/activities"
-                    component={ActivityDashboard}
-                  ></Route>
-                  <Route path="/activities/:id" component={ActivityDetails}></Route>
-                  <Route
-                    path={["/createActivity", "/editActivity/:id"]}
-                    component={ActivityForm}
-                  ></Route>
-                  <Route path="/manage/:id" component={ActivityForm}></Route>
-                  <Route path='/profile/:username' component={ProfilePage}></Route>
-                </>}
-                <Route path="/login" component={LoginForm}></Route>
-                <Route path="/errors" component={TestErrors}></Route>
+
+                <PrivateRoute exact path="/activities" component={ActivityDashboard} />
+                <PrivateRoute path="/activities/:id" component={ActivityDetails} />
+                <PrivateRoute
+                  path={["/createActivity", "/editActivity/:id"]}
+                  component={ActivityForm} />
+                <PrivateRoute path="/manage/:id" component={ActivityForm}></PrivateRoute>
+                <PrivateRoute path='/profile/:username' component={ProfilePage}></PrivateRoute>
+                <PrivateRoute path="/errors" component={TestErrors}></PrivateRoute>
                 <Route path="/server-error" component={ServerError}></Route>
-                <Route path="" component={NotFound}></Route>
+                <Route component={NotFound}></Route>
+
               </Switch>
+
             </Container>
           </>
         )}

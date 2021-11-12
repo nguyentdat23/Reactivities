@@ -4,7 +4,6 @@ import { Button, Form, Header, Label } from "semantic-ui-react";
 import MyTextInput from "../../app/common/form/MyTextInput";
 import { useStore } from "../../app/stores/store";
 import * as Yup from 'yup';
-import { string } from "yup/lib/locale";
 
 export default observer(function RegisterForm() {
     const { accountStore } = useStore();

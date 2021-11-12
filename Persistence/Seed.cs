@@ -24,9 +24,9 @@ namespace Persistence
                     },
                     new AppUser
                     {
-                        DisplayName = "Nguyen Le Mai Phuong",
-                        UserName = "nglmp",
-                        Email = "nglmp@gmail.com"
+                        DisplayName = "Bob",
+                        UserName = "bob",
+                        Email = "bob@test.com"
                     },
                     new AppUser
                     {
